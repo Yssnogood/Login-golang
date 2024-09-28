@@ -30,6 +30,9 @@ func main() {
 		handlers.SignupPage(db, w, r)
 	})
 
+	http.HandleFunc("/dashboard", handlers.DashboardPage)
+	http.HandleFunc("/logout", handlers.LogoutHandler)
+
 	// Servir les fichiers statiques (CSS)
 	http.Handle("/web/static/css/", http.StripPrefix("/web/static/css/", http.FileServer(http.Dir("./web/static/css/"))))
 
