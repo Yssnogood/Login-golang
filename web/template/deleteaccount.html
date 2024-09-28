@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="web/static/css/styles.css">
+</head>
+<body>
+    <div class="delete-container">
+        <h1>Etes vous sur de vouloir supprimer ce compte, {{.Username}} ?</h1>
+        <p>Confirmez cette action :</p>
+        
+        <form action="/deleteaccount" method="post">
+        <label for="username">Mot de passe:</label>
+        <input type="text" id="password1" name="password1" required>
+        <label for="username">Confirmez le mot de passe:</label>
+        <input type="text" id="password-confirm" name="password-confirm" required>
+        <button type="submit">Supprimer le compte</button>
+        </form>
+    </div>
+</body>
+</html>

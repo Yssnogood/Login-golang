@@ -43,6 +43,11 @@ func CreateUser(db *sql.DB, username, password string) error {
 	return err
 }
 
+func DeleteUser(db *sql.DB, username string) {
+	db.QueryRow("DELETE username, password FROM users WHERE username= ?", username)
+	return
+}
+
 // Vérifie si le mot de passe fourni correspond au hash enregistré dans la base de données
 func CheckPassword(hashedPassword, plainPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
