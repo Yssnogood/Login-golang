@@ -31,6 +31,6 @@ func SignupPage(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Rediriger vers la page de connexion
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
