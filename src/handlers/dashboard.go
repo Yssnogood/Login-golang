@@ -11,9 +11,11 @@ func DashboardPage(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
-	session, _ := store.Get(r, "session-name")
-	username := session.Values["username"]
+	username, exists := GetSessionUsername(r)
+	if !exists {
+		http.Redirect(w, r, "/", http.StatusSeeOther) // If no session, redirect to login
+		return
+	}
 
 	tmpl := template.Must(template.ParseFiles("./web/template/dashboard.html"))
 	tmpl.Execute(w, map[string]interface{}{

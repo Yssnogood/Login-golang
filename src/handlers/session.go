@@ -1,36 +1,58 @@
 package handlers
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"net/http"
-
-	"github.com/gorilla/sessions"
+	"time"
 )
 
-var store = sessions.NewCookieStore([]byte("secret-key"))
+var sessionStore = make(map[string]string)
 
-// Obtenir la session actuelle
-func GetSession(r *http.Request) *sessions.Session {
-	session, _ := store.Get(r, "session-name")
-	return session
+func generateSessionID() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return base64.URLEncoding.EncodeToString(b)
 }
 
-// Créer une session pour l'utilisateur
 func SetSession(w http.ResponseWriter, r *http.Request, username string) {
-	session := GetSession(r)
-	session.Values["username"] = username
-	session.Save(r, w)
+	sessionID := generateSessionID()
+	sessionStore[sessionID] = username
+
+	cookie := http.Cookie{
+		Name:     "session_token",
+		Value:    sessionID,
+		Expires:  time.Now().Add(1 * time.Hour),
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
 }
 
-// Effacer la session lors de la déconnexion
 func ClearSession(w http.ResponseWriter, r *http.Request) {
-	session := GetSession(r)
-	delete(session.Values, "username")
-	session.Save(r, w)
+	cookie, err := r.Cookie("session_token")
+	if err == nil {
+		delete(sessionStore, cookie.Value)
+		cookie.Expires = time.Now().Add(-1 * time.Hour)
+		http.SetCookie(w, cookie)
+	}
 }
 
-// Vérifier si l'utilisateur est connecté
 func IsLoggedIn(r *http.Request) bool {
-	session := GetSession(r)
-	_, ok := session.Values["username"]
-	return ok
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return false
+	}
+
+	_, exists := sessionStore[cookie.Value]
+	return exists
+}
+
+func GetSessionUsername(r *http.Request) (string, bool) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return "", false
+	}
+
+	username, exists := sessionStore[cookie.Value]
+	return username, exists
 }

@@ -33,6 +33,9 @@ func main() {
 
 	http.HandleFunc("/dashboard", handlers.DashboardPage)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
+	http.HandleFunc("/deleteaccount", func(w http.ResponseWriter, r *http.Request) {
+		handlers.DeleteAccountHandler(db, w, r)
+	})
 
 	// Servir les fichiers statiques (CSS)
 	http.Handle("/web/static/css/", http.StripPrefix("/web/static/css/", http.FileServer(http.Dir("./web/static/css/"))))
