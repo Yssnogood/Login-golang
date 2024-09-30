@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"login/src/database"
 	"login/src/handlers"
@@ -36,6 +37,15 @@ func main() {
 	// Servir les fichiers statiques (CSS)
 	http.Handle("/web/static/css/", http.StripPrefix("/web/static/css/", http.FileServer(http.Dir("./web/static/css/"))))
 
+	server := &http.Server{
+		Addr:              ":8080",
+		MaxHeaderBytes:    1 << 20,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		WriteTimeout:      10 * time.Second,
+	}
+
 	fmt.Println("Serveur démarré sur le port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(server.ListenAndServe())
 }
