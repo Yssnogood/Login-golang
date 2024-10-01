@@ -34,12 +34,16 @@ func main() {
 
 	http.HandleFunc("/dashboard", handlers.DashboardPage)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
-	http.HandleFunc("/deleteaccount", func(w http.ResponseWriter, r *http.Request) {
-		handlers.DeleteAccountHandler(db, w, r)
+	http.HandleFunc("/delete-account", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			handlers.DeleteAccountHandler(db, w, r)
+		} else {
+			http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		}
 	})
 
 	http.HandleFunc("/account-deleted", func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("templates/account_deleted.html"))
+		tmpl := template.Must(template.ParseFiles("./web/template/account-deleted.html"))
 		tmpl.Execute(w, nil)
 	})
 

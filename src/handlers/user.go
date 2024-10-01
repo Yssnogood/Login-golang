@@ -2,21 +2,30 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"login/src/models" // Remplace par le chemin correct vers tes modèles
 	"net/http"
 )
 
-// Supprimer le compte de l'utilisateur connecté
 func DeleteAccountHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	// Vérifier si l'utilisateur est connecté
-	session, _ := GetSessionUsername(r)
-	username := session
+	// Vérification de la méthode
+	if r.Method != "POST" {
+		log.Println("Mauvaise méthode :", r.Method)
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
 
-	fmt.Println("fzffzf", session)
+	username, ok := GetSessionUsername(r)
+	if !ok {
+		log.Println("Aucun utilisateur connecté.")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	// Supprimer l'utilisateur de la base de données
+	// Log du nom d'utilisateur
+	log.Println("Suppression de l'utilisateur :", username)
+
+	// Suppression de l'utilisateur de la base de données
 	err := models.DeleteUserByUsername(db, username)
 	if err != nil {
 		log.Println("Erreur lors de la suppression du compte :", err)
@@ -24,9 +33,12 @@ func DeleteAccountHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Log de succès
+	log.Println("Compte supprimé avec succès :", username)
+
 	// Supprimer la session de l'utilisateur
 	ClearSession(w, r)
 
-	// Rediriger vers la page de confirmation ou la page d'accueil
+	// Rediriger vers la page de confirmation
 	http.Redirect(w, r, "/account-deleted", http.StatusSeeOther)
 }
