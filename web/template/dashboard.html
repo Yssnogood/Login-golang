@@ -14,7 +14,10 @@
         <nav>
             <ul>
                 <li><a href="/logout">Se déconnecter</a></li>
-                <li><a href="/deleteaccount">Supprimer mon compte</a></li>
+                <li>
+                    <form action="/delete-account" method="POST">
+                    <input type="submit" value="Supprimer mon compte" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cela est irréversible.');">
+                </form></li>
             </ul>
         </nav>
     </div>

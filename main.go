@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -35,6 +36,11 @@ func main() {
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/deleteaccount", func(w http.ResponseWriter, r *http.Request) {
 		handlers.DeleteAccountHandler(db, w, r)
+	})
+
+	http.HandleFunc("/account-deleted", func(w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFiles("templates/account_deleted.html"))
+		tmpl.Execute(w, nil)
 	})
 
 	// Servir les fichiers statiques (CSS)

@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -43,9 +44,22 @@ func CreateUser(db *sql.DB, username, password string) error {
 	return err
 }
 
-func DeleteUser(db *sql.DB, username string) {
-	db.QueryRow("DELETE username, password FROM users WHERE username= ?", username)
-	return
+// Supprimer un utilisateur par son nom d'utilisateur
+func DeleteUserByUsername(db *sql.DB, username string) error {
+	// Requête SQL pour supprimer l'utilisateur
+	stmt, err := db.Prepare("DELETE FROM users WHERE username = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(username)
+	if err != nil {
+		log.Println("Erreur lors de la suppression de l'utilisateur :", err)
+		return err
+	}
+
+	return nil
 }
 
 // Vérifie si le mot de passe fourni correspond au hash enregistré dans la base de données
